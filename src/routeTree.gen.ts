@@ -18,17 +18,19 @@ const ServiciosRoute = ServiciosRouteImport.update({
   id: '/servicios',
   path: '/servicios',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/servicios.lazy').then((d) => d.Route))
 const PortafolioRoute = PortafolioRouteImport.update({
   id: '/portafolio',
   path: '/portafolio',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/portafolio.lazy').then((d) => d.Route))
 const NuestraHistoriaRoute = NuestraHistoriaRouteImport.update({
   id: '/nuestra-historia',
   path: '/nuestra-historia',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/nuestra-historia.lazy').then((d) => d.Route),
+)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
