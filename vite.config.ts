@@ -5,6 +5,7 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  base: "/elite-print-craft/",
   plugins: [
     TanStackRouterVite(),
     react(),
@@ -14,6 +15,7 @@ export default defineConfig({
   server: {
     port: 8080,
     host: "::",
+    allowedHosts: true,
   },
   build: {
     target: "esnext",
