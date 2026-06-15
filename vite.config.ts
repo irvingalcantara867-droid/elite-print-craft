@@ -5,7 +5,6 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  base: "/elite-print-craft/",
   plugins: [
     TanStackRouterVite(),
     react(),
