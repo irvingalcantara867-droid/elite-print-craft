@@ -180,9 +180,14 @@
 }
 
 @utility glass {
-  background: color-mix(in oklab, var(--background) 55%, transparent);
-  backdrop-filter: blur(20px) saturate(160%);
+  background: color-mix(in oklab, var(--background) 85%, transparent);
   border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+  /* backdrop-filter blur is only applied on desktop — on mobile it causes
+     GPU memory exhaustion and makes the whole page freeze / content disappear */
+  @media (hover: hover) and (pointer: fine) {
+    background: color-mix(in oklab, var(--background) 55%, transparent);
+    backdrop-filter: blur(20px) saturate(160%);
+  }
 }
 
 @utility text-gradient-gold {
@@ -202,7 +207,10 @@
     oklch(0.88 0.08 85)
   );
   background-size: 300% 300%;
-  animation: glowing-button-animation 6s ease infinite;
+  /* Only run the infinite animation on desktop — it's too heavy for mobile GPUs */
+  @media (hover: hover) and (pointer: fine) {
+    animation: glowing-button-animation 6s ease infinite;
+  }
 }
 
 @utility hover-lift {
