@@ -20,26 +20,6 @@ export default defineConfig({
     target: "es2020",
     minify: "esbuild",
     cssCodeSplit: true,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          // React core — loaded once and cached forever
-          if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/")) {
-            return "react-core";
-          }
-          // TanStack router + query
-          if (id.includes("node_modules/@tanstack/")) {
-            return "tanstack";
-          }
-          // Everything else (lucide, radix, etc.)
-          if (id.includes("node_modules/")) {
-            return "vendor";
-          }
-        },
-      },
-    },
   },
 });
-
-
 
