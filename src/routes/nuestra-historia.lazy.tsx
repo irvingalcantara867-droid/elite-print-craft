@@ -1,5 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { Nav, Footer, WhatsAppFloat } from "./index";
+import { Nav, Footer, WhatsAppFloat } from "@/components/layout/Layout";
 import logoPapg from "@/assets/PAPG.avif";
 
 export const Route = createLazyFileRoute("/nuestra-historia")({
@@ -11,7 +11,7 @@ function NuestraHistoria() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
 
-      <main className="mx-auto max-w-6xl px-6 pt-36 pb-24 animate-[fade-up_.8s_ease-out]">
+      <main className="mx-auto max-w-6xl px-6 pt-36 pb-24">
         {/* Section 1: Quiénes somos */}
         <section className="relative">
           {/* Ambient light glow */}

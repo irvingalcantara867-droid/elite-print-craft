@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { Nav, Footer, WhatsAppFloat } from "./index";
+import { Nav, Footer, WhatsAppFloat } from "@/components/layout/Layout";
 
 import img1 from "@/assets/1.jpeg";
 import img2 from "@/assets/2.jpeg";
@@ -102,7 +102,7 @@ function Portafolio() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
 
-      <main className="mx-auto max-w-7xl px-6 pt-36 pb-24 animate-[fade-up_.8s_ease-out]">
+      <main className="mx-auto max-w-7xl px-6 pt-36 pb-24">
         <section className="relative">
           {/* Ambient light glow */}
           <div className="pointer-events-none absolute -top-40 left-1/4 h-[400px] w-[600px] rounded-full bg-[var(--gold)] opacity-[0.05] blur-[130px]" />

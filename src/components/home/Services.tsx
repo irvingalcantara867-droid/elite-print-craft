@@ -1,5 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { Layers, BookOpen, Package, Megaphone, ArrowUpRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 const services = [
   {
@@ -33,6 +40,70 @@ const services = [
 ];
 
 export default function Services() {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCurrent(api.selectedScrollSnap());
+    const onSelect = () => {
+      setCurrent(api.selectedScrollSnap());
+    };
+
+    api.on("select", onSelect);
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
+  useEffect(() => {
+    if (!api) return;
+
+    let autoplayInterval: NodeJS.Timeout | null = null;
+    let resumeTimeout: NodeJS.Timeout | null = null;
+
+    const startAutoplay = () => {
+      stopAutoplay();
+      autoplayInterval = setInterval(() => {
+        if (api.canScrollNext()) {
+          api.scrollNext();
+        } else {
+          api.scrollTo(0);
+        }
+      }, 4000);
+    };
+
+    const stopAutoplay = () => {
+      if (autoplayInterval) {
+        clearInterval(autoplayInterval);
+        autoplayInterval = null;
+      }
+      if (resumeTimeout) {
+        clearTimeout(resumeTimeout);
+        resumeTimeout = null;
+      }
+    };
+
+    startAutoplay();
+
+    const handleUserInteraction = () => {
+      stopAutoplay();
+      // Resume autoplay after 12 seconds of inactivity
+      resumeTimeout = setTimeout(() => {
+        startAutoplay();
+      }, 12000);
+    };
+
+    api.on("pointerDown", stopAutoplay);
+    api.on("pointerUp", handleUserInteraction);
+    api.on("select", handleUserInteraction);
+
+    return () => {
+      stopAutoplay();
+    };
+  }, [api]);
+
   return (
     <section id="services" className="mx-auto max-w-7xl px-6 py-28 md:py-36">
       <div className="grid grid-cols-1 gap-10 md:grid-cols-[1fr_1.1fr] md:items-end">
@@ -62,7 +133,8 @@ export default function Services() {
         </div>
       </div>
 
-      <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-3xl border border-border bg-border md:grid-cols-2">
+      {/* Desktop static grid view */}
+      <div className="mt-16 hidden md:grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-border bg-border">
         {services.map((s) => (
           <article
             key={s.title}
@@ -94,6 +166,66 @@ export default function Services() {
             </a>
           </article>
         ))}
+      </div>
+
+      {/* Mobile auto-playing and draggable Carousel view */}
+      <div className="mt-12 block md:hidden">
+        <Carousel
+          setApi={setApi}
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-4">
+            {services.map((s) => (
+              <CarouselItem key={s.title} className="pl-4 basis-[90%] sm:basis-[80%]">
+                <article className="group relative h-full rounded-3xl border border-border bg-card p-8 transition-colors">
+                  <div className="flex items-start justify-between">
+                    <span className="font-serif text-sm text-muted-foreground">{s.num}</span>
+                    <s.icon className="h-5 w-5 text-gold" />
+                  </div>
+                  <h3 className="mt-10 font-serif text-2xl">{s.title}</h3>
+                  <p className="mt-4 text-sm text-muted-foreground leading-relaxed min-h-[100px]">
+                    {s.desc}
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {s.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  {/* Always visible "Consultar sobre este servicio" on mobile */}
+                  <a
+                    href="#quote"
+                    className="mt-8 inline-flex items-center gap-2 text-sm text-gold hover:underline"
+                  >
+                    Consultar sobre este servicio <ArrowUpRight className="h-4 w-4" />
+                  </a>
+                </article>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+
+        {/* Premium Pagination Indicator dots */}
+        <div className="mt-6 flex justify-center gap-2">
+          {services.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => api?.scrollTo(index)}
+              className={`h-2.5 rounded-full transition-all duration-300 ${
+                current === index ? "bg-gold w-6" : "bg-muted-foreground/30 hover:bg-muted-foreground/50 w-2.5"
+              }`}
+              aria-label={`Ir al servicio ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

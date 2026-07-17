@@ -76,7 +76,7 @@ export default function Quote() {
 
   return (
     <section id="quote" className="relative overflow-hidden py-28 md:py-36">
-      <div className="pointer-events-none absolute right-[-10%] top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-[var(--gold)] opacity-[0.06] blur-[140px]" />
+      <div className="pointer-events-none absolute right-[-10%] top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_center,oklch(0.82_0.11_85_/_0.06),transparent_70%)]" />
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-gold">— Solicitar una Cotización</p>

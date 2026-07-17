@@ -55,25 +55,31 @@ export default function Portfolio() {
 
         {/* Right Side: Rotating Image Card */}
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border bg-card">
-          {PORTFOLIO_PREVIEWS.map((img, idx) => (
-            <div
-              key={idx}
-              className={`absolute inset-0 transition-opacity duration-1000 ${
-                idx === currentIdx ? "opacity-100 z-10" : "opacity-0 z-0"
-              }`}
-            >
-              <img
-                src={img}
-                alt={`Proyecto Destacado ${idx + 1}`}
-                loading="lazy"
-                decoding="async"
-                className={`h-full w-full object-cover transition-transform duration-[4000ms] ease-out ${
-                  idx === currentIdx ? "scale-100" : "scale-105"
+          {PORTFOLIO_PREVIEWS.map((img, idx) => {
+            // Memory optimization for Safari on iPhone:
+            // Only render the active image and the one fading out to avoid bloating GPU memory
+            const isCurrent = idx === currentIdx;
+            const isPrev = idx === (currentIdx - 1 + PORTFOLIO_PREVIEWS.length) % PORTFOLIO_PREVIEWS.length;
+            if (!isCurrent && !isPrev) return null;
+
+            return (
+              <div
+                key={idx}
+                className={`absolute inset-0 transition-opacity duration-1000 ${
+                  isCurrent ? "opacity-100 z-10" : "opacity-0 z-0"
                 }`}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
-            </div>
-          ))}
+              >
+                <img
+                  src={img}
+                  alt={`Proyecto Destacado ${idx + 1}`}
+                  className={`h-full w-full object-cover transition-transform duration-[4000ms] ease-out ${
+                    isCurrent ? "scale-100" : "scale-105"
+                  }`}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

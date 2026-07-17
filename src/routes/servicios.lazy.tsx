@@ -1,5 +1,5 @@
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
-import { Nav, Footer, WhatsAppFloat } from "./index";
+import { Nav, Footer, WhatsAppFloat } from "@/components/layout/Layout";
 import { ArrowUpRight, Check } from "lucide-react";
 
 import imgImpresionUv from "@/assets/impresion uv.avif";
@@ -93,7 +93,7 @@ function Servicios() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
 
-      <main className="mx-auto max-w-7xl px-6 pt-36 pb-24 animate-[fade-up_.8s_ease-out]">
+      <main className="mx-auto max-w-7xl px-6 pt-36 pb-24">
         {/* Hero Header */}
         <section className="relative text-center max-w-4xl mx-auto mb-24">
           {/* Ambient glow light */}

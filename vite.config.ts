@@ -17,7 +17,7 @@ export default defineConfig({
     allowedHosts: true,
   },
   build: {
-    target: "esnext",
+    target: "es2020",
     minify: "esbuild",
     cssCodeSplit: true,
     rollupOptions: {
