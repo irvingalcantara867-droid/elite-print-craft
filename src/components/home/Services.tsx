@@ -1,12 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Layers, BookOpen, Package, Megaphone, ArrowUpRight } from "lucide-react";
-import { useState, useEffect } from "react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from "@/components/ui/carousel";
+import { useRef, useState } from "react";
 
 const services = [
   {
@@ -40,69 +34,26 @@ const services = [
 ];
 
 export default function Services() {
-  const [api, setApi] = useState<CarouselApi>();
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
 
-  useEffect(() => {
-    if (!api) return;
+  const scrollTo = (index: number) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const card = el.children[index] as HTMLElement;
+    if (card) {
+      el.scrollTo({ left: card.offsetLeft, behavior: "smooth" });
+    }
+    setCurrent(index);
+  };
 
-    setCurrent(api.selectedScrollSnap());
-    const onSelect = () => {
-      setCurrent(api.selectedScrollSnap());
-    };
-
-    api.on("select", onSelect);
-    return () => {
-      api.off("select", onSelect);
-    };
-  }, [api]);
-
-  useEffect(() => {
-    if (!api) return;
-
-    let autoplayInterval: NodeJS.Timeout | null = null;
-    let resumeTimeout: NodeJS.Timeout | null = null;
-
-    const startAutoplay = () => {
-      stopAutoplay();
-      autoplayInterval = setInterval(() => {
-        if (api.canScrollNext()) {
-          api.scrollNext();
-        } else {
-          api.scrollTo(0);
-        }
-      }, 4000);
-    };
-
-    const stopAutoplay = () => {
-      if (autoplayInterval) {
-        clearInterval(autoplayInterval);
-        autoplayInterval = null;
-      }
-      if (resumeTimeout) {
-        clearTimeout(resumeTimeout);
-        resumeTimeout = null;
-      }
-    };
-
-    startAutoplay();
-
-    const handleUserInteraction = () => {
-      stopAutoplay();
-      // Resume autoplay after 12 seconds of inactivity
-      resumeTimeout = setTimeout(() => {
-        startAutoplay();
-      }, 12000);
-    };
-
-    api.on("pointerDown", stopAutoplay);
-    api.on("pointerUp", handleUserInteraction);
-    api.on("select", handleUserInteraction);
-
-    return () => {
-      stopAutoplay();
-    };
-  }, [api]);
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardWidth = (el.children[0] as HTMLElement)?.offsetWidth ?? 1;
+    const idx = Math.round(el.scrollLeft / cardWidth);
+    setCurrent(Math.min(idx, services.length - 1));
+  };
 
   return (
     <section id="services" className="mx-auto max-w-7xl px-6 py-28 md:py-36">
@@ -168,59 +119,55 @@ export default function Services() {
         ))}
       </div>
 
-      {/* Mobile auto-playing and draggable Carousel view */}
+      {/* Mobile native scroll-snap carousel — no library, no setInterval */}
       <div className="mt-12 block md:hidden">
-        <Carousel
-          setApi={setApi}
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full"
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory"
+          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
         >
-          <CarouselContent className="-ml-4">
-            {services.map((s) => (
-              <CarouselItem key={s.title} className="pl-4 basis-[90%] sm:basis-[80%]">
-                <article className="group relative h-full rounded-3xl border border-border bg-card p-8 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <span className="font-serif text-sm text-muted-foreground">{s.num}</span>
-                    <s.icon className="h-5 w-5 text-gold" />
-                  </div>
-                  <h3 className="mt-10 font-serif text-2xl">{s.title}</h3>
-                  <p className="mt-4 text-sm text-muted-foreground leading-relaxed min-h-[100px]">
-                    {s.desc}
-                  </p>
-                  <div className="mt-6 flex flex-wrap gap-2">
-                    {s.tags.map((t) => (
-                      <span
-                        key={t}
-                        className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  {/* Always visible "Consultar sobre este servicio" on mobile */}
-                  <a
-                    href="#quote"
-                    className="mt-8 inline-flex items-center gap-2 text-sm text-gold hover:underline"
+          {services.map((s) => (
+            <article
+              key={s.title}
+              className="group relative flex-none w-[88%] rounded-3xl border border-border bg-card p-8 snap-start"
+            >
+              <div className="flex items-start justify-between">
+                <span className="font-serif text-sm text-muted-foreground">{s.num}</span>
+                <s.icon className="h-5 w-5 text-gold" />
+              </div>
+              <h3 className="mt-10 font-serif text-2xl">{s.title}</h3>
+              <p className="mt-4 text-sm text-muted-foreground leading-relaxed min-h-[100px]">
+                {s.desc}
+              </p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {s.tags.map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"
                   >
-                    Consultar sobre este servicio <ArrowUpRight className="h-4 w-4" />
-                  </a>
-                </article>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
+                    {t}
+                  </span>
+                ))}
+              </div>
+              <a
+                href="#quote"
+                className="mt-8 inline-flex items-center gap-2 text-sm text-gold hover:underline"
+              >
+                Consultar sobre este servicio <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </article>
+          ))}
+        </div>
 
-        {/* Premium Pagination Indicator dots */}
+        {/* Dot indicators */}
         <div className="mt-6 flex justify-center gap-2">
           {services.map((_, index) => (
             <button
               key={index}
-              onClick={() => api?.scrollTo(index)}
+              onClick={() => scrollTo(index)}
               className={`h-2.5 rounded-full transition-all duration-300 ${
-                current === index ? "bg-gold w-6" : "bg-muted-foreground/30 hover:bg-muted-foreground/50 w-2.5"
+                current === index ? "bg-gold w-6" : "bg-muted-foreground/30 w-2.5"
               }`}
               aria-label={`Ir al servicio ${index + 1}`}
             />
