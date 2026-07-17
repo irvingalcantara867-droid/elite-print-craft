@@ -343,3 +343,18 @@
     opacity: 0;
   }
 }
+
+/*
+ * MOBILE PERFORMANCE: Disable expensive CSS filter blur on touch devices.
+ * The ambient glow divs (blur-[120px], blur-[130px], etc.) create separate
+ * GPU compositing layers. On mobile Safari, multiple blur filters exhaust
+ * GPU memory → the entire page goes blank and scroll freezes.
+ * On mobile, the glows remain as very-low-opacity colored divs (nearly invisible
+ * anyway) with no GPU cost.
+ */
+@media (hover: none), (pointer: coarse) {
+  [class*="blur-"] {
+    filter: none !important;
+    -webkit-filter: none !important;
+  }
+}
